@@ -14,7 +14,7 @@ class My_string{
             original = "";
             current = "";
         }
-    
+        bool isPalindrome = 0;
         std::string original;
         std::string current;
 };
