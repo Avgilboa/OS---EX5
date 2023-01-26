@@ -29,7 +29,6 @@ public:
     void enqueue(My_string val);
     bool empty();
     My_string dequeue();
-    bool empty();
     My_string front();
     void pop();
     

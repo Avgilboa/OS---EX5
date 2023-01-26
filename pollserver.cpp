@@ -105,13 +105,13 @@ void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
 // Main
 int main(int argc, char *argv[])
 {
-    pipeLine pl;
-    if(argc != 2 || argv[1] < 2 || argv[1] > 10){
+    pipeLine pl = pipeLine();
+    if(argc != 2 || argc < 2 || argc > 10){
             printf("Usage : enter number of client between 2-10");
             exit(1);
         }
-
-    std::thread t2([(&pl.myQueue),&argv] {
+    mutex_Queue *mQ = &pl.myQueue;
+    std::thread t2([&mQ,&argv] {
 
         
         int listener;     // Listening socket descriptor
@@ -127,8 +127,8 @@ int main(int argc, char *argv[])
         // Start off with room for 5 connections
         // (We'll realloc as necessary)
         int fd_count = 0;
-        int fd_size = argv[1];
-        struct pollfd *pfds = malloc(sizeof *pfds * fd_size);
+        int fd_size = atoi(argv[1]);
+        struct pollfd *pfds = new struct pollfd[fd_size];
 
         // Set up and get a listening socket
         listener = get_listener_socket();
@@ -200,9 +200,9 @@ int main(int argc, char *argv[])
 
                         } else {
                             // We got some good data from a client
-                            My_string data = buf;
+                            My_string data = My_string(buf);
                             std::lock_guard<std::mutex> lock(queueMutex);
-                            myQueue.enqueue(data);
+                            mQ->enqueue(data);
                             for(int j = 0; j < fd_count; j++) {
                                 //here check if palindrom
                                 // Send to everyone!
