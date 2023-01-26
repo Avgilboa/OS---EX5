@@ -80,23 +80,14 @@ int main(int argc, char *argv[])
 
     freeaddrinfo(servinfo); // all done with this structure
 
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
-        perror("recv");
-        exit(1);
-    }
-
-    buf[numbytes] = '\0';
-
-    printf("DEBUG : connection received '%s'\n",buf);
-
-        while (1) // loop to send all the requests.
+    while (1) // loop to send all the requests.
     {
         string command; //Command to send to server
         getline(cin, command); //Get command from user
 
-        if (command == "EXIT") //If user wants to exit
+        if (command == "quit") //If user wants to exit
         {
-            cout << "DEBUG : Disconnecting.." << endl;
+            cout << "good by" << endl;
             close(sockfd); //Close connection
             exit(0); //Exit program
         }
@@ -106,13 +97,6 @@ int main(int argc, char *argv[])
             perror("send");
             exit(1);
         }
-        if ((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1) //Receiving data while checking for errors.
-        {
-            perror("recv");
-            exit(1);
-        }
-        buf[numbytes] = '\0';
-        cout << buf << endl;
     }
 
     return 0;
