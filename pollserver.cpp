@@ -25,8 +25,13 @@ int main(int argc, char *argv[]) {
     //         exit(1);
     //     }
     
-    std::thread t2([&pl] {
-        int sockfd, clientfd, maxfd;
+    std::thread t2([&pl , &argv] {
+        int sockfd, clientfd, maxfd, current_clients = 0;
+        int clients = atoi(argv[1]);
+        if(clients < 2 || clients > 10){
+            printf("Usage : enter number of client between 2-10");
+            exit(1);
+        }
         struct sockaddr_in server_addr, client_addr;
         socklen_t client_len;
         fd_set readfds;
@@ -77,10 +82,17 @@ int main(int argc, char *argv[]) {
                     exit(1);
                     }
                 printf("New connection from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-                FD_SET(clientfd, &readfds);
-                if (clientfd > maxfd) {
-                    maxfd = clientfd;
+                 current_clients++;
+                if (current_clients <= clients) {
+                    FD_SET(clientfd, &readfds);
+                    if (clientfd > maxfd) {
+                        maxfd = clientfd;
+                    }
+                } else {
+                    printf("Too many clients, connection refused\n");
+                    close(clientfd);
                 }
+
             }
 
             // Check for data from connected clients
