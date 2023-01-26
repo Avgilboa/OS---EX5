@@ -4,12 +4,20 @@
 #include <stdexcept>
 #include <string>
 
-typedef struct poli_str{
-    std::string original;
-    std::string current;
-    int isPalindrome;
-    poli_str(std::string str);
-} My_string;
+class My_string{
+    public:
+        My_string(std::string str){
+            original = str;
+            current = str;
+        }
+        My_string(){
+            original = "";
+            current = "";
+        }
+    
+        std::string original;
+        std::string current;
+};
 
 class mutex_Queue
 {
