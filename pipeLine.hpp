@@ -94,7 +94,7 @@ public:
     std::string str = "NO";
     if(data.isPalindrome == 1)
       str = "YES";
-    std::cout << "Perform operation 4 on data" << std::endl;
+    //std::cout << "Perform operation 4 on data" << std::endl;
     std::cout << "original:" << data.original << std::endl;
     std::cout << "polyndrom:" << str << std::endl;
     
@@ -113,12 +113,12 @@ class pipeLine{
   public:
     
     pipeLine(){  
-      std::cout<<"hi!"<<std::endl;
+      //std::cout<<"hi!"<<std::endl;
       activeObject4 = std::make_shared<ActiveObject4>();
       activeObject3 = std::make_shared<ActiveObject3>(activeObject4);
       activeObject2 = std::make_shared<ActiveObject2>(activeObject3);
       activeObject1 = std::make_shared<ActiveObject1>(activeObject2);
-      std::cout<<"hi!"<<std::endl;
+      //std::cout<<"hi!"<<std::endl;
 
       // std::thread t1([&] {
       // });

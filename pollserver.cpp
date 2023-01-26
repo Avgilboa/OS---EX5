@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
                     perror("Error: Unable to accept connection");
                     exit(1);
                     }
-                printf("New connection from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+                //printf("New connection from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
                  current_clients++;
                 if (current_clients <= clients) {
                     FD_SET(clientfd, &readfds);
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
                         My_string data = My_string(buffer);
                         std::lock_guard<std::mutex> lock(queueMutex);
                         pl.myQueue.enqueue(data);
-                        printf("Received message from client: %s\n", buffer);
+                        //printf("Received message from client: %s\n", buffer);
                     // Process data here
                     }
                     }
