@@ -9,6 +9,7 @@ class My_string{
         My_string(std::string str){
             original = str;
             current = str;
+            
         }
         My_string(){
             original = "";
