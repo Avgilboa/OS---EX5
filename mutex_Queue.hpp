@@ -24,13 +24,37 @@ class My_string{
 class mutex_Queue
 {
 public:
-    mutex_Queue();
-    ~mutex_Queue();
-    void enqueue(My_string val);
-    bool empty();
-    My_string dequeue();
-    My_string front();
-    void pop();
+    mutex_Queue(){}
+    ~mutex_Queue(){}
+    void enqueue(My_string val){
+        std::lock_guard<std::mutex> lock(queueMutex);
+        myQueue.push_back(val);
+    }
+    bool empty(){
+        std::lock_guard<std::mutex> lock(queueMutex);
+        return myQueue.empty();
+    }
+    My_string dequeue(){
+        std::lock_guard<std::mutex> lock(queueMutex);
+        if (myQueue.empty())
+            throw std::runtime_error("Queue is empty");
+        My_string val = myQueue.front();
+        myQueue.erase(myQueue.begin());
+        return val;
+    }
+    My_string front(){
+        std::lock_guard<std::mutex> lock(queueMutex);
+        if (myQueue.empty())
+            throw std::runtime_error("Queue is empty");
+        return myQueue.front();
+    }
+    void pop(){
+        std::lock_guard<std::mutex> lock(queueMutex);
+        if (myQueue.empty())
+            throw std::runtime_error("Queue is empty");
+        myQueue.erase(myQueue.begin());
+    }
+
     
 private:
     std::vector<My_string> myQueue;
