@@ -15,7 +15,7 @@ class My_string{
             original = "";
             current = "";
         }
-    
+        bool isPalindrome = 0;
         std::string original;
         std::string current;
 };
@@ -26,6 +26,7 @@ public:
     mutex_Queue();
     ~mutex_Queue();
     void enqueue(My_string val);
+    bool empty();
     My_string dequeue();
 private:
     std::vector<My_string> myQueue;

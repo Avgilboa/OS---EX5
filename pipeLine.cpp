@@ -4,20 +4,65 @@
 #include "mutex_Queue.hpp"
 #include <chrono>
 #include <mutex>
-
-
+#include<thread>
+#include <condition_variable>
+#include <queue>
+void pipline(My_string str);
 
 class ActiveObject {
 public:
+    void start() {
+        thread_ = std::thread(&ActiveObject::run, this);
+    }
+    void stop() {
+        running_ = false;
+        thread_.join();
+    }
+    void doSomething() {
+        std::cout<<"123"<<std::endl;
+        std::unique_lock<std::mutex> lock(mutex_);
+        tasks_.push(123);
+        this->run();
+        condition_.notify_one();
+    }
+private:
+    void run() {
+                            std::cout<<"1234567"<<std::endl;
+
+        while (running_) {
+            std::unique_lock<std::mutex> lock(mutex_);
+            while (tasks_.empty()) {
+                      std::cout<<"1234"<<std::endl;
+
+                condition_.wait(lock);
+            }
+                    std::cout<<"12345"<<std::endl;
+
+            auto task = tasks_.front();
+            tasks_.pop();
+            lock.unlock();
+            this->stop();
+            pipline(My_string("hih"));
+        }
+    }
+    std::thread thread_;
+    std::mutex mutex_;
+    std::condition_variable condition_;
+    std::queue<int> tasks_;
+    bool running_ = true;
+};
+
+class Stage {
+public:    
   virtual void SendMessage(std::unique_ptr<My_string> data) = 0;
   
 };
 
-class ActiveObject1 : public ActiveObject {
+class Stage1 : public Stage {
 private:
-  std::shared_ptr<ActiveObject> next_;
+  std::shared_ptr<Stage> next_;
 public:
-  ActiveObject1(std::shared_ptr<ActiveObject> next) : next_(next) {}
+  Stage1(std::shared_ptr<Stage> next) : next_(next) {}
   void SendMessage(std::unique_ptr<My_string> data) override {
     // Perform operation 1 on data
     std::string curr = "";
@@ -31,9 +76,9 @@ public:
 
 };
 
-class ActiveObject2 : public ActiveObject {
+class Stage2 : public Stage {
 public:
-  ActiveObject2(std::shared_ptr<ActiveObject> next) : next_(next) {}
+  Stage2(std::shared_ptr<Stage> next) : next_(next) {}
   void SendMessage(std::unique_ptr<My_string> data) override {
     std::string curr = "";
     for(int i=0; i<data.get()->current.length(); i++){
@@ -51,23 +96,60 @@ public:
     next_->SendMessage(std::move(data));
   }
 private:
-  std::shared_ptr<ActiveObject> next_;
+  std::shared_ptr<Stage> next_;
 };
 
-class ActiveObject3 : public ActiveObject {
+class Stage3 : public Stage {
 public:
-  ActiveObject3() {}
+  Stage3(std::shared_ptr<Stage> next) : next_(next) {}
   void SendMessage(std::unique_ptr<My_string> data) override {
-    std::cout << "Perform original " << data.get()->original << std::endl;
-    std::cout << "Perform operation 3 on data " << data.get()->current << std::endl;
+            std::string str = data.get()->current;
+            data.get()->isPalindrome = -1;
+            int i = 0;
+            int j = str.length() - 1;
+            while (i < j){
+                if (str[i] != str[j]){
+                    data.get()->isPalindrome = 0;
+                    break;
+                }
+                i++;
+                j--;
+            }
+            if(data.get()->isPalindrome == -1){
+              data.get()->isPalindrome = 1;
+            }
+        next_->SendMessage(std::move(data));
+  }
+private:
+  std::shared_ptr<Stage> next_;
+};
+
+class Stage4 : public Stage {
+public:
+  Stage4() {}
+  void SendMessage(std::unique_ptr<My_string> data) override {
+    std::string str = "NO";
+    if(data.get()->isPalindrome == 1)
+      str = "YES";
+    std::cout << "Perform operation 4 on data" << std::endl;
+    std::cout << "original:" << data.get()->original << std::endl;
+    std::cout << "polyndrom:" << str << std::endl;
+    
   }
 };
 
-int main() {
-  auto active_object3 = std::make_shared<ActiveObject3>();
-  auto active_object2 = std::make_shared<ActiveObject2>(active_object3);
-  auto active_object1 = std::make_shared<ActiveObject1>(active_object2);
+void pipline(My_string str){
+  auto stage4 = std::make_shared<Stage4>();
+  auto stage3 = std::make_shared<Stage3>(stage4);
+  auto stage2 = std::make_shared<Stage2>(stage3);
+  auto stage1 = std::make_shared<Stage1>(stage2);
 
-  std::unique_ptr<My_string> data = std::make_unique<My_string>("h\te4\n5ll!~`o");
-  active_object1->SendMessage(std::move(data));
+  std::unique_ptr<My_string> data = std::make_unique<My_string>(str);
+  stage1->SendMessage(std::move(data));
+}
+
+
+int main() {
+  ActiveObject a;
+  a.doSomething();
 }

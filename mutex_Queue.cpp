@@ -1,11 +1,6 @@
 #include "mutex_Queue.hpp"
 
 using namespace std;
-poli_str::poli_str(string str){
-    original = str;
-    current = "";
-    isPalindrome = 0;  
-}
 mutex_Queue::mutex_Queue()
 {
 
@@ -26,6 +21,9 @@ My_string mutex_Queue::dequeue(){
     My_string val = myQueue.front();
     myQueue.erase(myQueue.begin());
     return val;
+}
+bool mutex_Queue::empty(){
+    return myQueue.empty();
 }
 
 int main(){
