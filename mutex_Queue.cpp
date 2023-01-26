@@ -1,11 +1,5 @@
 #include "mutex_Queue.hpp"
 
-
-poli_str::poli_str(std::string str){
-    original = str;
-    current = "";
-    isPalindrome = 0;  
-}
 mutex_Queue::mutex_Queue()
 {
 
@@ -27,12 +21,28 @@ My_string mutex_Queue::dequeue(){
     myQueue.erase(myQueue.begin());
     return val;
 }
-
-int main(){
-    mutex_Queue myQueue;
-    My_string myString("racecar");
-    myQueue.enqueue(myString);
-    myString = myQueue.dequeue();
-    std::cout << myString.original << std::endl;
-    return 0;
+bool mutex_Queue::empty(){
+    std::lock_guard<std::mutex> lock(queueMutex);
+    return myQueue.empty();
 }
+My_string mutex_Queue::front(){
+    std::lock_guard<std::mutex> lock(queueMutex);
+    if (myQueue.empty())
+        throw std::runtime_error("Queue is empty");
+    return myQueue.front();
+}
+void mutex_Queue::pop(){
+    std::lock_guard<std::mutex> lock(queueMutex);
+    if (myQueue.empty())
+        throw std::runtime_error("Queue is empty");
+    myQueue.erase(myQueue.begin());
+}
+
+// int main(){
+//     mutex_Queue myQueue;
+//     My_string myString("racecar");
+//     myQueue.enqueue(myString);
+//     myString = myQueue.dequeue();
+//     std::cout << myString.original << std::endl;
+//     return 0;
+// }

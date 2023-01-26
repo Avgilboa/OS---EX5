@@ -3,6 +3,7 @@
 #include <vector>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
 class My_string{
     public:
@@ -26,6 +27,10 @@ public:
     ~mutex_Queue();
     void enqueue(My_string val);
     My_string dequeue();
+    bool empty();
+    My_string front();
+    void pop();
+    
 private:
     std::vector<My_string> myQueue;
     std::mutex queueMutex;
